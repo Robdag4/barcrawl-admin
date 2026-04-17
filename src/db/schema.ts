@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, numeric, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, integer, numeric, jsonb, boolean } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -78,6 +78,14 @@ export const organizers = pgTable('organizers', {
   outreachStatus: text('outreach_status').default('none'),
   outreachNotes: text('outreach_notes'),
   wpPostId: integer('wp_post_id'),
+  passwordHash: text('password_hash'),
+  emailVerified: boolean('email_verified').default(false),
+  verificationToken: text('verification_token'),
+  socialLinks: jsonb('social_links'),
+  backlinkUrl: text('backlink_url'),
+  backlinkVerifiedAt: timestamp('backlink_verified_at'),
+  backlinkLastChecked: timestamp('backlink_last_checked'),
+  lastLoginAt: timestamp('last_login_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
