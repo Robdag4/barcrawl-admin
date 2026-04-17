@@ -41,8 +41,9 @@ export function getOrganizerSessionCookie(token: string) {
     name: COOKIE_NAME,
     value: token,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'none' as const,
+    domain: '.barcrawl.com',
     path: '/',
     maxAge: 60 * 60 * 24 * 7,
   };
