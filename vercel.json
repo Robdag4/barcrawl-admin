@@ -1,12 +1,9 @@
 {
   "crons": [
     { "path": "/api/cron/discover?batch=0", "schedule": "0 8 * * 1" },
-    { "path": "/api/cron/discover?batch=16", "schedule": "5 8 * * 1" },
-    { "path": "/api/cron/discover?batch=32", "schedule": "10 8 * * 1" },
-    { "path": "/api/cron/discover?batch=48", "schedule": "15 8 * * 1" },
-    { "path": "/api/cron/discover?batch=64", "schedule": "20 8 * * 1" },
-    { "path": "/api/cron/discover?batch=80", "schedule": "25 8 * * 1" },
-    { "path": "/api/cron/discover?batch=96", "schedule": "30 8 * * 1" },
+    { "path": "/api/cron/discover?batch=13", "schedule": "5 8 * * 1" },
+    { "path": "/api/cron/discover?batch=26", "schedule": "10 8 * * 1" },
+    { "path": "/api/cron/discover?batch=39", "schedule": "15 8 * * 1" },
     { "path": "/api/cron/normalize", "schedule": "0 9 * * *" },
     { "path": "/api/cron/score", "schedule": "30 9 * * *" },
     { "path": "/api/cron/moderate", "schedule": "0 14 * * *" },

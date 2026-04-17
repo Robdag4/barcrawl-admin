@@ -4,13 +4,12 @@ import { db } from '@/db';
 import { crawlCandidates, organizers, auditLog } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
-// 111 cities split across 7 days (Mon=0..Sun=6) — ~16 per day
-// On weekly cron (Monday), process ALL cities across the week
-// Each invocation processes a batch to stay within Vercel timeout
+// Top 50 US cities for bar crawls — 2 queries each = 100 searches/month (free tier)
+// Runs weekly on Monday in 4 batches of ~13 cities
 
 const SERPAPI_BASE = 'https://serpapi.com/search.json';
 const QUERIES = ['bar crawl', 'pub crawl'];
-const BATCH_SIZE = 16; // cities per invocation
+const BATCH_SIZE = 13; // cities per invocation
 
 interface SerpEvent {
   title?: string;
@@ -80,6 +79,7 @@ export async function GET(req: NextRequest) {
       .where(sql`${crawlCandidates.city} is not null`);
 
     // Static city list as fallback (top US cities for bar crawls)
+    // Top 50 US cities for bar crawl activity (100 searches/month = free tier)
     const staticCities = [
       'New York, NY', 'Chicago, IL', 'Austin, TX', 'Nashville, TN', 'Miami, FL',
       'San Diego, CA', 'Las Vegas, NV', 'Denver, CO', 'Portland, OR', 'Savannah, GA',
@@ -89,25 +89,9 @@ export async function GET(req: NextRequest) {
       'Cleveland, OH', 'Columbus, OH', 'St. Louis, MO', 'Jacksonville, FL', 'Tampa, FL',
       'Fort Lauderdale, FL', 'Hoboken, NJ', 'Jersey City, NJ', 'Honolulu, HI',
       'Louisville, KY', 'Charlotte, NC', 'Raleigh, NC', 'Baltimore, MD', 'Washington, DC',
-      'Indianapolis, IN', 'Kansas City, MO', 'St. Petersburg, FL', 'Fort Worth, TX',
-      'San Antonio, TX', 'Orlando, FL', 'Sacramento, CA', 'Virginia Beach, VA',
-      'Buffalo, NY', 'Albany, NY', 'Newport Beach, CA', 'Stamford, CT',
-      'New Haven, CT', 'Morristown, NJ', 'Albuquerque, NM', 'Anchorage, AK',
-      'Asheville, NC', 'Atlantic City, NJ', 'Baton Rouge, LA', 'Birmingham, AL',
-      'Boise, ID', 'Burlington, VT', 'Cape Coral, FL', 'Cedar Rapids, IA',
-      'Charleston, SC', 'Chattanooga, TN', 'Cincinnati, OH', 'Colorado Springs, CO',
-      'Corpus Christi, TX', 'Des Moines, IA', 'Durham, NC', 'El Paso, TX',
-      'Eugene, OR', 'Fargo, ND', 'Fresno, CA', 'Grand Rapids, MI',
-      'Greenville, SC', 'Hartford, CT', 'Huntsville, AL', 'Iowa City, IA',
-      'Jackson, MS', 'Knoxville, TN', 'Lexington, KY', 'Lincoln, NE',
-      'Little Rock, AR', 'Madison, WI', 'Memphis, TN', 'Mesa, AZ',
-      'Mobile, AL', 'Montgomery, AL', 'Myrtle Beach, SC', 'Norfolk, VA',
-      'Oklahoma City, OK', 'Omaha, NE', 'Palm Springs, CA', 'Pensacola, FL',
-      'Phoenix, AZ', 'Providence, RI', 'Reno, NV', 'Richmond, VA',
-      'Rochester, NY', 'Salt Lake City, UT', 'San Jose, CA', 'Santa Fe, NM',
-      'Sarasota, FL', 'Sioux Falls, SD', 'Spokane, WA', 'Springfield, IL',
-      'Syracuse, NY', 'Tacoma, WA', 'Tallahassee, FL', 'Toledo, OH',
-      'Tucson, AZ', 'Tulsa, OK', 'Wichita, KS', 'Wilmington, NC',
+      'Indianapolis, IN', 'Kansas City, MO', 'Orlando, FL', 'Charleston, SC',
+      'Cincinnati, OH', 'San Antonio, TX', 'Sacramento, CA', 'Phoenix, AZ',
+      'Salt Lake City, UT', 'Richmond, VA', 'Madison, WI', 'Asheville, NC',
     ];
 
     const cities = staticCities.slice(batchOffset, batchOffset + BATCH_SIZE);
